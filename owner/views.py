@@ -5,10 +5,15 @@ from .serializers import UserSerializer
 from .models import User
 import jwt, datetime
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 
-# Create your views here.
+
+
+
 class RegisterView(APIView):
+    @csrf_exempt
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -16,24 +21,28 @@ class RegisterView(APIView):
         return Response(serializer.data)
 
 
-
+@csrf_exempt
 def testget(request):
     if request.method == "GET":
         sdata = User.objects.all()
         s1data = UserSerializer(sdata, many=True)
         return JsonResponse(s1data.data, safe=False)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
     def post(self, request):
+        print(request.data)
         email = request.data['email']
         password = request.data['password']
 
         user = User.objects.filter(email=email).first()
 
         if user is None:
+            print("no")
             raise AuthenticationFailed('User not found!')
 
         if not user.check_password(password):
+            print("yes")
             raise AuthenticationFailed('Incorrect password!')
 
         # return JsonResponse({"massage":"its work"})
@@ -42,20 +51,21 @@ class LoginView(APIView):
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
             'iat': datetime.datetime.utcnow()
         }
-        print(jwt.encode(payload, 'secret', algorithm='HS256'))
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
 
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        #print(token)
         response = Response()
 
         response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = {
             'jwt': token
         }
+        print(response)
         return response
 
 
 class UserView(APIView):
-
+    @csrf_exempt
     def get(self, request):
         token = request.COOKIES.get('jwt')
 
