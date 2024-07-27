@@ -67,18 +67,18 @@ class LoginView(APIView):
 class UserView(APIView):
     @csrf_exempt
     def get(self, request):
-        token = request.COOKIES.get('jwt')
+        # token = request.COOKIES.get('jwt')
+        #
+        # if not token:
+        #     raise AuthenticationFailed('Unauthenticated!')
+        #
+        # try:
+        #     print("yes")
+        #     payload = jwt.decode(token, 'secret', 'HS256')
+        # except jwt.ExpiredSignatureError:
+        #     raise AuthenticationFailed('Unauthenticated!')
 
-        if not token:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        try:
-            print("yes")
-            payload = jwt.decode(token, 'secret', 'HS256')
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        user = User.objects.filter(id=payload['id']).first()
+        user = User.objects.filter(id=1).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
