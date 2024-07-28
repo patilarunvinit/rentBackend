@@ -8,6 +8,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     mobile_no = models.CharField(max_length=20)
+    b_date = models.DateField(null = True)
     owner_photo = models.ImageField(upload_to='images/', null=True, verbose_name="")
     username = models.CharField(max_length=255, null=True)
 
