@@ -17,9 +17,6 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions
 
 
-
-
-
 class RegisterView(APIView):
     @csrf_exempt
     def post(self, request):
@@ -47,7 +44,11 @@ class LoginView(APIView):
 
         user = User.objects.filter(email=email).first()
 
-        if user is None or not user.check_password(password):
+        if user is None:
+            raise AuthenticationFailed('Invalid Email.')
+        elif user and not user.check_password(password):
+            raise AuthenticationFailed('Invalid Password.')
+        elif user is None or not user.check_password(password):
             raise AuthenticationFailed('Invalid credentials.')
 
         # Generate tokens
@@ -78,11 +79,32 @@ class UserView(APIView):
         except User.DoesNotExist:
             raise AuthenticationFailed('Unauthenticated!')
 
-        user = User.objects.filter(id=11).first()
+        user = User.objects.filter(email=email).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class AccessRefreshView(APIView):
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            token = RefreshToken(refresh_token)
+            new_access_token = token.access_token
+            # if token.blacklisted:
+            #     return Response({'detail': 'Invalid or blacklisted refresh token.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'access': str(new_access_token)}, status=status.HTTP_200_OK)
+        except TokenError:
+            return Response({'detail': 'Invalid refresh token.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
 class LogoutView(APIView):
     authentication_classes = [JWTAuthentication]  # Use JWTAuthentication
     permission_classes = [permissions.IsAuthenticated]
@@ -90,12 +112,13 @@ class LogoutView(APIView):
         try:
             # Extract the refresh token from the request
             refresh_token = request.data.get('refresh')
-            print(refresh_token)
+            # print(refresh_token)
             if not refresh_token:
                 return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            token = RefreshToken(refresh_token)
-            token.blacklist()  # Blacklist the refresh token
+            r_token = RefreshToken(refresh_token)
+            r_token.blacklist()  # Blacklist the refresh token
+            print(r_token)
             return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_205_RESET_CONTENT)
 
         except TokenError:

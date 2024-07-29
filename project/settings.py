@@ -134,6 +134,8 @@ SIMPLE_JWT = {
     'SIGNING_KEY': 'your-secure-secret-key',  # Replace with a secure key
     'VERIFYING_KEY': None,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'UPDATE_LAST_LOGIN': True,
+    'BLACKLIST': True,
 }
 
 # Internationalization
