@@ -33,6 +33,7 @@ class AddressView(APIView):
         serializer.save()
         return Response(serializer.data)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class GetAddress(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
