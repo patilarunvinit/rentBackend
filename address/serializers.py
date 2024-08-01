@@ -7,8 +7,14 @@ class AddressSerializer(serializers.ModelSerializer):
         model = address
         fields = ['id','owner_id', 'Area', 'Building_name', 'Floor','Flat_no', 'Rent','is_on_rent']
 
-
     def create(self, validated_data):
             instance = self.Meta.model(**validated_data)
             instance.save()
             return instance
+
+
+class AddressforleaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = address
+        fields = ['id', 'Area', 'Building_name', 'Floor','Flat_no']
+

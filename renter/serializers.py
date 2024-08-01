@@ -7,10 +7,13 @@ class renterSerializer(serializers.ModelSerializer):
     class Meta:
         model = renter
         fields = ['id','owner_id', 'renter_name', 'renter_mobile_no', 'id_type', 'id_img']
-
-
-
     def create(self, validated_data):
             instance = self.Meta.model(**validated_data)
             instance.save()
             return instance
+
+
+class RenterforleaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = renter
+        fields = ['id', 'renter_name']

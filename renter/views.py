@@ -1,4 +1,4 @@
-from .serializers import renterSerializer
+from .serializers import renterSerializer, RenterforleaseSerializer
 from .models import renter
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -49,3 +49,20 @@ class renterView(APIView):
 #             return Response(addr_seril.data)
 #
 #         return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class renterforleaseview(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        email = request.user
+        data=User.objects.filter(email=email).values("id")
+        owner_id=data[0]["id"]
+        renter_data=renter.objects.filter(owner_id=owner_id)
+        if renter_data:
+            addr_seril = RenterforleaseSerializer(renter_data, many=True)
+            return Response(addr_seril.data)
+
+        return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
