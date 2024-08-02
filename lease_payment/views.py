@@ -1,5 +1,7 @@
 from .serializers import leaseSerializer
 from .models import lease
+
+from address.models import address
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -18,14 +20,19 @@ class leaseView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        renter_name=request.data.get('renter_name')
-        present=lease.objects.filter(renter_name=renter_name)
-        print(present)
-        if present:
-            return Response({'detail': 'lease already Present'}, status=status.HTTP_400_BAD_REQUEST)
-
+        address_id = request.data.get('address_id')
+        print(address_id)
+        address1 = address.objects.filter(id=address_id).first()
+        if address_id:
+            address1.is_on_rent = 1
+            address1.save()
         serializer = leaseSerializer(data=request.data)
         print(serializer)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        if serializer.is_valid():
+            # serializer.save()
+            return Response(serializer.data)
+        return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+

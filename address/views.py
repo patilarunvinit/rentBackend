@@ -33,6 +33,8 @@ class AddressView(APIView):
         serializer.save()
         return Response(serializer.data)
 
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class GetAddress(APIView):
     authentication_classes = [JWTAuthentication]
@@ -48,6 +50,23 @@ class GetAddress(APIView):
             return Response(addr_seril.data)
 
         return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class GetsingleAddress(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        id=request.GET.get('address_id')
+        address_data=address.objects.filter(id=id)
+        if address_data:
+            addr_seril = AddressSerializer(address_data, many=True)
+            return Response(addr_seril.data)
+
+        return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 

@@ -3,10 +3,10 @@ from django.db import models
 
 # Create your models here.
 class lease(models.Model):
-    owner_id=models.IntegerField()
-    renter=models.IntegerField()
-    start_date = models.DateField()
-    end_date = models.DateField()
+    address_id=models.IntegerField()
+    renter_id=models.IntegerField()
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
     rent = models.DecimalField(max_digits=10, decimal_places=2)
     deposit = models.DecimalField(max_digits=10, decimal_places=2)
 

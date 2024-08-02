@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password
 class leaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = lease
-        fields = ['id', 'owner_id', 'renter', 'start_date', 'end_date', 'rent', 'deposit']
+        fields = ['id', 'address_id', 'renter_id', 'start_date', 'end_date', 'rent', 'deposit']
 
     def create(self, validated_data):
             instance = self.Meta.model(**validated_data)
