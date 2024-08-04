@@ -26,6 +26,7 @@ class RegisterView(APIView):
         return Response(serializer.data)
 
 
+# For Test
 @csrf_exempt
 def testget(request):
     if request.method == "GET":
@@ -33,6 +34,7 @@ def testget(request):
         s1data = UserSerializer(sdata, many=True)
         return JsonResponse(s1data.data, safe=False)
 
+#For Owner Login
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
     def post(self, request):
