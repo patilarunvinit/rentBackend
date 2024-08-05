@@ -69,7 +69,7 @@ class renterforleaseview(APIView):
         return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+# To Get Renter For Lease Form
 @method_decorator(csrf_exempt, name='dispatch')
 class Getrenterifonlease(APIView):
     authentication_classes = [JWTAuthentication]
