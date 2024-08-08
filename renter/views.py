@@ -23,7 +23,7 @@ class renterView(APIView):
         # print('Request Data:', request.data)
         # print('Request Files:', request.FILES.get('id_img'))
         present=renter.objects.filter(renter_name=renter_name)
-        print(present)
+        # print(present)
         if present:
             return Response({'detail': 'Renter already Present'}, status=status.HTTP_400_BAD_REQUEST)
 

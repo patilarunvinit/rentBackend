@@ -44,7 +44,16 @@ class GetAddress(APIView):
         email = request.user
         data=User.objects.filter(email=email).values("id")
         owner_id=data[0]["id"]
-        address_data=address.objects.filter(owner_id=owner_id)
+        available = request.GET.get('available')
+        print(available)
+        if available == "all":
+            address_data=address.objects.filter(owner_id=owner_id)
+        elif available == "1":
+            print("yes")
+            address_data=address.objects.filter(owner_id=owner_id,is_on_rent=available)
+        elif available == "0":
+            address_data=address.objects.filter(owner_id=owner_id,is_on_rent=available)
+
         if address_data:
             addr_seril = AddressSerializer(address_data, many=True)
             return Response(addr_seril.data)
