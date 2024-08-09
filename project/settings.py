@@ -81,6 +81,7 @@ TEMPLATES = [
     },
 ]
 
+#entry point of project
 WSGI_APPLICATION = 'project.wsgi.application'
 
 
@@ -94,7 +95,7 @@ DATABASES = {
     # }
        'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "rentapp",
+        'NAME': "renter",
         "HOST": '127.0.0.1',
         "PORT": 3306,
         "USER": 'root',
