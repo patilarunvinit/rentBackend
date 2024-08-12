@@ -1,4 +1,4 @@
-from .serializers import leaseSerializer
+from .serializers import leaseSerializer, paymentSerializer
 from .models import lease,Payment
 
 from address.models import address
@@ -18,6 +18,56 @@ from renter.models import renter
 
 from datetime import date
 from dateutil.relativedelta import relativedelta
+
+#test
+from twilio.rest import Client
+
+@method_decorator(csrf_exempt, name='dispatch')
+class testview(APIView):
+
+        def get(self, request):
+            ACCOUNT_SID = ''
+            AUTH_TOKEN = ''
+
+            # Create a client instance
+            client = Client(ACCOUNT_SID, AUTH_TOKEN)
+
+            # Your Twilio WhatsApp sandbox number
+            from_whatsapp_number = ''  # Twilio sandbox number
+
+            # Recipient's phone number (must be in the format 'whatsapp:+1234567890')
+            to_whatsapp_number = ''
+
+            # Message you want to send
+            message_body = 'Hello, this is a test message from Twilio!'
+
+            # Send the message
+            message = client.messages.create(
+                body=message_body,
+                from_=from_whatsapp_number,
+                to=to_whatsapp_number
+            )
+            print(f"Status: {message.status}")
+
+            return Response({'detail': 'msg send'})
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PaymentView(APIView):
+    authentication_classes = [JWTAuthentication]  # Use JWTAuthentication
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = paymentSerializer(data=request.data)
+        print(serializer)
+        if serializer.is_valid():
+            print("work")
+            serializer.save()
+            return Response(serializer.data)
+        return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 

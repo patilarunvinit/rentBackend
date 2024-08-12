@@ -19,3 +19,4 @@ class Payment(models.Model):
     date_of_pay = models.DateField()
     for_month = models.CharField(max_length=7)  # Format: YYYY-MM
     transaction_mode = models.CharField(max_length=50)
+
