@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import leaseView, getleaseforrent,getmonths, PaymentView,testview
+from .views import leaseView, getleaseforrent,getmonths, PaymentView,testview,getremiain,getremianhistory
 from . import views
 
 urlpatterns = [
@@ -7,6 +7,8 @@ urlpatterns = [
     path('addlease', leaseView.as_view()),
     path('getlease', getleaseforrent.as_view()),
     path('getmonths', getmonths.as_view()),
+    path('getremain', getremiain.as_view()),
+    path('remianhistory', getremianhistory.as_view()),
     path('test123', testview.as_view()),
 
 

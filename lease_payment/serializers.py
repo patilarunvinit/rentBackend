@@ -24,3 +24,5 @@ class paymentSerializer(serializers.ModelSerializer):
             return instance
 
 
+
+

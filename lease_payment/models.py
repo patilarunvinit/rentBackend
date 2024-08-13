@@ -16,7 +16,7 @@ class Payment(models.Model):
     lease_id = models.IntegerField()
     paid = models.DecimalField(max_digits=10, decimal_places=2)
     remain = models.DecimalField(max_digits=10, decimal_places=2)
-    date_of_pay = models.DateField()
+    date_of_pay = models.DateField(null=True)
     for_month = models.CharField(max_length=7)  # Format: YYYY-MM
-    transaction_mode = models.CharField(max_length=50)
+    transaction_mode = models.CharField(max_length=50,null=True, blank=True)
 
