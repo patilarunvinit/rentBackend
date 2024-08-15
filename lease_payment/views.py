@@ -263,10 +263,12 @@ class getremianhistory(APIView):
             renter_name = renter.objects.filter(id=lease_data[0]["renter_id"]).values('renter_name').first()
             deposit = lease.objects.filter(id=lease_id).values('deposit')
             pay_data = Payment.objects.filter(lease_id=lease_id,remain__gt=0).values("remain","paid","for_month")
-            print(pay_data)
+            total_remain = Payment.objects.filter(lease_id=lease_id).values('lease_id').annotate(total_remain=Sum('remain')).values( 'total_remain')
+
+            print(total_remain)
 
 
-            rent_info=[address_data,renter_name,deposit]
+            rent_info=[address_data,renter_name,deposit,total_remain]
 
             if pay_data:
                 return Response({'rent_info': rent_info,'remain_data':pay_data})
