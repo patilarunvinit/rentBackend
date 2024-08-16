@@ -83,12 +83,9 @@ class RemainPayView(APIView):
         lease_id_value = request.data.get('lease_id', None)
 
         serializer = remainSerializer(data=request.data)
-        print(serializer)
         if serializer.is_valid():
-            print("work")
             Payment.objects.filter(lease_id=lease_id_value,for_month=for_month_value, is_remain_pay=0).update(remain=remain_value)
             serializer.save()
-            print("done")
             return Response(serializer.data)
         return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -112,15 +109,36 @@ class leaseView(APIView):
         address1 = address.objects.filter(id=address_id).first()
         if address_id:
             address1.is_on_rent = 1
-            address1.save()
+            # address1.save()
         serializer = leaseSerializer(data=request.data)
         print(serializer)
         if serializer.is_valid():
-            serializer.save()
+            # serializer.save()
             return Response(serializer.data)
         return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class removeleaseView(APIView):
+    authentication_classes = [JWTAuthentication]  # Use JWTAuthentication
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        address_id = request.data.get('address_id')
+        end_date = request.data.get('end_date')
+
+        if address_id:
+            # lease.objects.filter(address_id=address_id).update(end_date=end_date)
+            # address.objects.filter(id=address_id).update(is_on_rent=0)
+            return Response({'detail': 'Lease Removed'})
+
+        return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -303,6 +321,40 @@ class getremianhistory(APIView):
                 return Response({'rent_info': rent_info,'remain_data':pay_data})
             return Response({'detail': 'No Remain Data'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+
+
+
+
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class getremovedata(APIView):
+        authentication_classes = [JWTAuthentication]  # Use JWTAuthentication
+        permission_classes = [permissions.IsAuthenticated]
+
+        def get(self, request):
+            address_id = request.GET.get('address_id')
+            deposit = lease.objects.filter(address_id=address_id).values('deposit')
+            lease_id = lease.objects.filter(address_id=address_id).values('id')
+            total_remain = Payment.objects.filter(lease_id=lease_id[0]['id']).values('lease_id').annotate(total_remain=Sum('remain')).values( 'total_remain')
+            deposite_to_pay = deposit[0]['deposit'] - total_remain[0]['total_remain']
+            renter_id = lease.objects.filter(id=lease_id[0]['id']).values('renter_id').first()
+            renter_name = renter.objects.filter(id=renter_id['renter_id']).values('renter_name').first()
+
+            response_data = {
+                'renter_name': renter_name['renter_name'],
+                'total_remain': float(total_remain[0]['total_remain']),
+                'deposite_to_pay': float(deposite_to_pay),
+                'deposit': float(deposit[0]['deposit']),
+            }
+
+
+            if response_data:
+                return Response(response_data)
+            return Response({'detail': 'No Data To Remove'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 

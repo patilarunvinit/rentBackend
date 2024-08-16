@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AddressView,GetAddress,Addressforleaseview,GetsingleAddress
+from .views import AddressView,GetAddress,Addressforleaseview,GetsingleAddress,Addressonleaseview
 from . import views
 
 urlpatterns = [
@@ -7,6 +7,6 @@ urlpatterns = [
     path('getaddress', GetAddress.as_view()),
     path('getsingleaddress', GetsingleAddress.as_view()),
     path('addressforlease', Addressforleaseview.as_view()),
-
+    path('addressonlease', Addressonleaseview.as_view()),
 
 ]
