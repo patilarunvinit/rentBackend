@@ -1,6 +1,6 @@
 from django.db.models import Sum
 
-from .serializers import leaseSerializer, paymentSerializer
+from .serializers import leaseSerializer, paymentSerializer ,remainSerializer
 from .models import lease,Payment
 
 from address.models import address
@@ -72,6 +72,34 @@ class PaymentView(APIView):
 
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class RemainPayView(APIView):
+    authentication_classes = [JWTAuthentication]  # Use JWTAuthentication
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        remain_value = request.data.get('remain', None)
+        for_month_value = request.data.get('for_month', None)
+        lease_id_value = request.data.get('lease_id', None)
+
+        serializer = remainSerializer(data=request.data)
+        print(serializer)
+        if serializer.is_valid():
+            print("work")
+            Payment.objects.filter(lease_id=lease_id_value,for_month=for_month_value, is_remain_pay=0).update(remain=remain_value)
+            serializer.save()
+            print("done")
+            return Response(serializer.data)
+        return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class leaseView(APIView):
@@ -127,7 +155,7 @@ class getleaseforrent(APIView):
                 if dateformonth==end_date_month:
                     pass
                 else:
-                    paid = Payment.objects.filter(lease_id=lease_id, for_month=dateformonth).values('paid')
+                    paid = Payment.objects.filter(lease_id=lease_id, for_month=dateformonth,is_remain_pay=0).values('paid')
                     if paid:
                         print(paid)
                     else:
@@ -137,7 +165,8 @@ class getleaseforrent(APIView):
                             "remain": rent_of_lease[0]["rent"],
                             "date_of_pay": None,
                             "for_month": dateformonth,
-                            "transaction_mode": ""
+                            "transaction_mode": "",
+                            "is_remain_pay":0,
                         }
                         serializer = paymentSerializer(data=to_save_data)
                         # print(serializer)
@@ -147,7 +176,7 @@ class getleaseforrent(APIView):
                 rent=leasedata.rent
                 renter_name=renter.objects.filter(id=leasedata.renter_id).values('renter_name')
                 addressdata=address.objects.filter(id=leasedata.address_id).values('Area','Building_name','Floor','Flat_no')
-                paid=Payment.objects.filter(lease_id=lease_id,for_month=dateformonth).values('paid')
+                paid=Payment.objects.filter(lease_id=lease_id,for_month=dateformonth,is_remain_pay=0).values('paid')
                 date_of_pay=Payment.objects.filter(lease_id=lease_id,for_month=dateformonth).values('date_of_pay')
                 # print(lease_id,dateformonth,rent,renter_name[0]["renter_name"],addressdata[0]["Area"],addressdata)
                 if reqdate == dateformonth:

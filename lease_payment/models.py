@@ -19,4 +19,5 @@ class Payment(models.Model):
     date_of_pay = models.DateField(null=True)
     for_month = models.CharField(max_length=7)  # Format: YYYY-MM
     transaction_mode = models.CharField(max_length=50,null=True, blank=True)
+    is_remain_pay = models.BooleanField(null=True, default=0)
 
