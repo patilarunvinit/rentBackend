@@ -88,13 +88,16 @@ class UserView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AccessRefreshView(APIView):
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         refresh_token = request.data.get('refresh')
+        print(refresh_token)
         if not refresh_token:
             return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            print("work")
             token = RefreshToken(refresh_token)
+            print("work")
             new_access_token = token.access_token
             # if token.blacklisted:
             #     return Response({'detail': 'Invalid or blacklisted refresh token.'}, status=status.HTTP_400_BAD_REQUEST)
