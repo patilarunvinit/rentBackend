@@ -42,16 +42,16 @@ class LoginView(APIView):
         password = request.data.get('password')
 
         if not email or not password:
-            return Response({'detail': 'Email and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.filter(email=email).first()
 
         if user is None:
-            raise AuthenticationFailed('Invalid Email.')
+            raise AuthenticationFailed('Invalid Email')
         elif user and not user.check_password(password):
-            raise AuthenticationFailed('Invalid Password.')
+            raise AuthenticationFailed('Invalid Password')
         elif user is None or not user.check_password(password):
-            raise AuthenticationFailed('Invalid credentials.')
+            raise AuthenticationFailed('Invalid credentials')
 
         # Generate tokens
         refresh = RefreshToken.for_user(user)
@@ -90,14 +90,11 @@ class UserView(APIView):
 class AccessRefreshView(APIView):
     def post(self, request):
         refresh_token = request.data.get('refresh')
-        print(refresh_token)
         if not refresh_token:
             return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            print("work")
             token = RefreshToken(refresh_token)
-            print("work")
             new_access_token = token.access_token
             # if token.blacklisted:
             #     return Response({'detail': 'Invalid or blacklisted refresh token.'}, status=status.HTTP_400_BAD_REQUEST)

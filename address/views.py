@@ -100,6 +100,28 @@ class Addressforleaseview(APIView):
 
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class Addresscountview(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        email = request.user
+        data=User.objects.filter(email=email).values("id")
+        owner_id=data[0]["id"]
+        address_data=address.objects.filter(owner_id=owner_id)
+        address_count=len(address_data)
+        if address_count:
+            responce={
+                "addresscount":address_count
+            }
+            return Response(responce)
+
+        return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 
 
