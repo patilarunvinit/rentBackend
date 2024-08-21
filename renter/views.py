@@ -12,7 +12,7 @@ from rest_framework import permissions
 from rest_framework import status
 from owner.models import User
 from lease_payment.models import lease
-
+from address.models import address
 @method_decorator(csrf_exempt, name='dispatch')
 class renterView(APIView):
     authentication_classes = [JWTAuthentication]  # Use JWTAuthentication
@@ -78,10 +78,21 @@ class Getrenterifonlease(APIView):
     def get(self, request):
         address_id=request.GET.get('address_id')
         renter_id=lease.objects.filter(address_id=address_id).values_list('renter_id', flat=True).first()
-        print(renter_id)
+
         if renter_id:
-            renter_data= renter.objects.filter(id=renter_id).first()
-            addr_seril = renterSerializer(renter_data, many=False)
-            return Response(addr_seril.data)
+            address1 = address.objects.filter(id=address_id,is_on_rent=0)
+            start_date = lease.objects.filter(address_id=address_id).values("start_date")
+            print(address1)
+            if address1:
+                return Response({'detail': 'Address Is Not On Lease'}, status=status.HTTP_400_BAD_REQUEST)
+
+            else:
+                print("work")
+                extra_data = {
+                    'start_date': start_date[0]['start_date'],
+                }
+                renter_data = renter.objects.filter(id=renter_id).first()
+                addr_seril = renterSerializer(renter_data, many=False)
+                return Response([addr_seril.data, extra_data])
 
         return Response({'detail': 'Address Is Not On Lease'}, status=status.HTTP_400_BAD_REQUEST)

@@ -11,6 +11,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions
 from rest_framework import status
 from owner.models import User
+from lease_payment.models import lease
 
 @method_decorator(csrf_exempt, name='dispatch')
 
@@ -67,11 +68,19 @@ class GetsingleAddress(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        id=request.GET.get('address_id')
-        address_data=address.objects.filter(id=id)
+        id = request.GET.get('address_id')
+        address_data = address.objects.filter(id=id)
+        email = request.user
+        name = User.objects.filter(email=email).values("name")
+        extra_data = {
+                'owner_name': name[0]['name'],
+            }
+
+
+
         if address_data:
             addr_seril = AddressSerializer(address_data, many=True)
-            return Response(addr_seril.data)
+            return Response([addr_seril.data,extra_data])
 
         return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
 
