@@ -23,6 +23,9 @@ from dateutil.relativedelta import relativedelta
 
 #test
 from twilio.rest import Client
+from django.utils.dateparse import parse_date
+
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class testview(APIView):
@@ -65,7 +68,7 @@ class PaymentView(APIView):
         print(serializer)
         if serializer.is_valid():
             print("work")
-            serializer.save()
+            # serializer.save()
             return Response(serializer.data)
         return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -84,8 +87,8 @@ class RemainPayView(APIView):
 
         serializer = remainSerializer(data=request.data)
         if serializer.is_valid():
-            Payment.objects.filter(lease_id=lease_id_value,for_month=for_month_value, is_remain_pay=0).update(remain=remain_value)
-            serializer.save()
+            # Payment.objects.filter(lease_id=lease_id_value,for_month=for_month_value, is_remain_pay=0).update(remain=remain_value)
+            # serializer.save()
             return Response(serializer.data)
         return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -160,7 +163,6 @@ class getleaseforrent(APIView):
         # print(today)
         end_date = today - relativedelta(months=1)
         end_date_month = end_date.strftime('%Y-%m')
-        print(end_date_month)
         main_list=[]
         for leasedata in lease_data:
             lease_list = []
@@ -175,7 +177,7 @@ class getleaseforrent(APIView):
                 else:
                     paid = Payment.objects.filter(lease_id=lease_id, for_month=dateformonth,is_remain_pay=0).values('paid')
                     if paid:
-                        print(paid)
+                        pass
                     else:
                         to_save_data={
                             "lease_id": lease_id,
@@ -202,7 +204,7 @@ class getleaseforrent(APIView):
                     lease_list.append({"dateformonth": dateformonth})
                     lease_list.append({"rent": rent})
                     lease_list.append({"renter_name": renter_name[0]["renter_name"]})
-                    lease_list.append({"addressdata": addressdata[0]["Area"]})
+                    lease_list.append({"addressdata": addressdata})
                     lease_list.append({"paid": paid})
                     lease_list.append({"date_of_pay": date_of_pay})
                     main_list.append(lease_list)
@@ -241,7 +243,7 @@ class getmonths(APIView):
                     else:
                         main_list.append(date_dict)
 
-
+            main_list.sort(key=lambda x: parse_date(x["dateformonth"] + '-01'), reverse=True)
 
             if main_list:
                 return Response(main_list)
