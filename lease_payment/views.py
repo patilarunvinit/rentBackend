@@ -112,11 +112,11 @@ class leaseView(APIView):
         address1 = address.objects.filter(id=address_id).first()
         if address_id:
             address1.is_on_rent = 1
-            address1.save()
+            # address1.save()
         serializer = leaseSerializer(data=request.data)
         print(serializer)
         if serializer.is_valid():
-            serializer.save()
+            # serializer.save()
             return Response(serializer.data)
         return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -137,8 +137,8 @@ class removeleaseView(APIView):
         end_date = request.data.get('end_date')
 
         if address_id:
-            lease.objects.filter(address_id=address_id).update(end_date=end_date)
-            address.objects.filter(id=address_id).update(is_on_rent=0)
+            # lease.objects.filter(address_id=address_id).update(end_date=end_date)
+            # address.objects.filter(id=address_id).update(is_on_rent=0)
             return Response({'detail': 'Lease Removed'})
 
         return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
