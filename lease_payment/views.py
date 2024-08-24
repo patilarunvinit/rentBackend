@@ -96,6 +96,30 @@ class RemainPayView(APIView):
 
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class fullRemainPayView(APIView):
+    authentication_classes = [JWTAuthentication]  # Use JWTAuthentication
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        form_data = request.data['fullpaydata']
+        lease_id = request.data['fullpaydata']['lease_id']
+        months = request.data['for_months']
+        months_list = [month.get('for_month') for month in months]
+
+        serializer = remainSerializer(data=form_data)
+        if serializer.is_valid():
+            # Payment.objects.filter(lease_id=lease_id, for_month__in=months_list, is_remain_pay=0) .update(remain=0)
+            # serializer.save()
+            return Response(serializer.data)
+        else:
+            print("Errors:", serializer.errors)
+        return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
 
 
 

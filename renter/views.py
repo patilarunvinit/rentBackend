@@ -28,9 +28,12 @@ class renterView(APIView):
             return Response({'detail': 'Renter already Present'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = renterSerializer(data=request.data)
-        print(serializer)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        if serializer.is_valid():
+            # serializer.save()
+            return Response(serializer.data)
+        else:
+            print("Errors:", serializer.errors)
+
         return Response(serializer.data)
 
 
