@@ -240,7 +240,7 @@ class getleaseforrent(APIView):
         if main_list:
             return Response(main_list)
 
-        return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'No Address Is On Lease'}, status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class getmonths(APIView):

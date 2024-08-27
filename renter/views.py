@@ -69,7 +69,7 @@ class renterforleaseview(APIView):
             addr_seril = RenterforleaseSerializer(renter_data, many=True)
             return Response(addr_seril.data)
 
-        return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'You Need Add Renter First'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # To Get Renter For Lease Form
