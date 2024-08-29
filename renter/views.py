@@ -29,7 +29,7 @@ class renterView(APIView):
 
         serializer = renterSerializer(data=request.data)
         if serializer.is_valid():
-            # serializer.save()
+            serializer.save()
             return Response(serializer.data)
         else:
             print("Errors:", serializer.errors)

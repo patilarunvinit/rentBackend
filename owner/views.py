@@ -122,13 +122,12 @@ class AccessRefreshView(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class OTPRequestView(APIView):
     def post(self, request):
-        # print(request.data)
+        print(request.data)
         serializer = OTPRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         email = serializer.validated_data['email']
-        print(email)
         try:
             user = User.objects.get(email=email)
             otp_code = str(random.randint(100000, 999999))  # Generate a 6-digit OTP
@@ -171,6 +170,7 @@ class OTPRequestView(APIView):
 class OTPVerificationView(APIView):
     def post(self, request):
         serializer = OTPVerificationSerializer(data=request.data)
+        print(serializer)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -194,13 +194,16 @@ class OTPVerificationView(APIView):
 class PasswordResetView(APIView):
     def post(self, request):
         serializer = PasswordResetSerializer(data=request.data)
+        # print(serializer)
         if not serializer.is_valid():
+            print("work")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         email = serializer.validated_data['email']
         new_password = serializer.validated_data['new_password']
         try:
             user = User.objects.get(email=email)
+            print(user)
             user.set_password(new_password)
             user.save()
             # Optionally, delete all OTPs for this user
