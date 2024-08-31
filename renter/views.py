@@ -20,22 +20,26 @@ class renterView(APIView):
 
     def post(self, request):
         renter_name=request.data.get('renter_name')
-        # print('Request Data:', request.data)
-        # print('Request Files:', request.FILES.get('id_img'))
+        owner_id=request.data.get('owner_id')
         present=renter.objects.filter(renter_name=renter_name)
-        # print(present)
         if present:
             return Response({'detail': 'Renter already Present'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = renterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            # serializer.save()
             return Response(serializer.data)
         else:
             print("Errors:", serializer.errors)
+            last_error_message = get_last_error_message(serializer.errors)
+            return Response({'detail': last_error_message}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.data)
+        # return Response(serializer.data)
 
+
+def get_last_error_message(errors):
+    all_errors = [msg for field_errors in errors.values() for msg in field_errors]
+    return all_errors[-1] if all_errors else ""
 
 
 

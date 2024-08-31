@@ -30,9 +30,32 @@ class AddressView(APIView):
             return Response({'detail': 'Address already Present'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = AddressSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        if serializer.is_valid():
+            # serializer.save()
+            return Response(serializer.data)
+        else:
+            consolidated_message = all_fields_required(serializer.errors)
+            if consolidated_message:
+                return Response({'detail': consolidated_message}, status=status.HTTP_400_BAD_REQUEST)
+
+            last_error_message = get_last_error_message(serializer.errors)
+            return Response({'detail': last_error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+        # return Response(serializer.data)
+
+def get_last_error_message(errors):
+   all_errors = [msg for field_errors in errors.values() for msg in field_errors]
+   return all_errors[-1] if all_errors else ""
+
+def all_fields_required(errors):
+    # Check if all errors are "This field is required."
+    required_errors = all(
+        all(error.code == 'required' for error in field_errors)
+        for field_errors in errors.values()
+    )
+    if required_errors:
+        return "All fields are required."
+    return None
 
 
 
