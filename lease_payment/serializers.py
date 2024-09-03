@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from .models import lease, Payment
-from django import forms
-from django.contrib.auth.hashers import make_password
 
+
+# lease serializer
 class leaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = lease
@@ -13,6 +13,9 @@ class leaseSerializer(serializers.ModelSerializer):
             instance.save()
             return instance
 
+
+
+# to store main payment
 class paymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
@@ -24,6 +27,8 @@ class paymentSerializer(serializers.ModelSerializer):
             return instance
 
 
+
+# to store remain payment
 class remainSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment

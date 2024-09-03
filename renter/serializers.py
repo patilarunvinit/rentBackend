@@ -3,6 +3,9 @@ from .models import renter
 from django import forms
 from django.contrib.auth.hashers import make_password
 
+
+
+# Main renter Serializer
 class renterSerializer(serializers.ModelSerializer):
     class Meta:
         model = renter
@@ -13,6 +16,10 @@ class renterSerializer(serializers.ModelSerializer):
             return instance
 
 
+
+
+
+# renter only for lease
 class RenterforleaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = renter

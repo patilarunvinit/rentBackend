@@ -1,7 +1,7 @@
 from django.db import models
 
 
-# Create your models here.
+# renter model
 class renter(models.Model):
     owner_id=models.IntegerField()
     renter_name = models.CharField(max_length=60)

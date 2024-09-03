@@ -1,7 +1,7 @@
 from django.db import models
 
 
-# Create your models here.
+
 class lease(models.Model):
     address_id=models.IntegerField()
     renter_id=models.IntegerField()

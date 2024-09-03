@@ -2,6 +2,10 @@ from rest_framework import serializers
 from .models import address
 from django.contrib.auth.hashers import make_password
 
+
+
+
+# Main Serializer for address
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = address
@@ -13,6 +17,10 @@ class AddressSerializer(serializers.ModelSerializer):
             return instance
 
 
+
+
+
+# Serializer for address for lease
 class AddressforleaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = address

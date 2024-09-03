@@ -9,7 +9,6 @@ urlpatterns = [
     path('refresh', AccessRefreshView.as_view()),
     path('logout', LogoutView.as_view()),
     path('test',views.testget),
-
     path('request_otp', OTPRequestView.as_view()),
     path('verify_otp', OTPVerificationView.as_view() ),
     path('reset_password', PasswordResetView.as_view()),

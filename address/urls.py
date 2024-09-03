@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import AddressView,GetAddress,Addressforleaseview,GetsingleAddress,Addressonleaseview,Addresscountview
-from . import views
+
 
 urlpatterns = [
     path('addAddress', AddressView.as_view()),

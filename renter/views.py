@@ -2,17 +2,19 @@ from .serializers import renterSerializer, RenterforleaseSerializer
 from .models import renter
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions
 from rest_framework import status
 from owner.models import User
 from lease_payment.models import lease
 from address.models import address
+
+
+
+
+# To store renter with owner_id(user)
 @method_decorator(csrf_exempt, name='dispatch')
 class renterView(APIView):
     authentication_classes = [JWTAuthentication]  # Use JWTAuthentication
@@ -27,38 +29,21 @@ class renterView(APIView):
 
         serializer = renterSerializer(data=request.data)
         if serializer.is_valid():
-            # serializer.save()
+            serializer.save()
             return Response(serializer.data)
         else:
-            print("Errors:", serializer.errors)
             last_error_message = get_last_error_message(serializer.errors)
             return Response({'detail': last_error_message}, status=status.HTTP_400_BAD_REQUEST)
 
-        # return Response(serializer.data)
 
-
+# to get error msg fun
 def get_last_error_message(errors):
     all_errors = [msg for field_errors in errors.values() for msg in field_errors]
     return all_errors[-1] if all_errors else ""
 
 
 
-# class GetAddress(APIView):
-#     authentication_classes = [JWTAuthentication]
-#     permission_classes = [permissions.IsAuthenticated]
-#
-#     def get(self, request):
-#         email = request.user
-#         data=User.objects.filter(email=email).values("id")
-#         owner_id=data[0]["id"]
-#         address_data=address.objects.filter(owner_id=owner_id)
-#         if address_data:
-#             addr_seril = AddressSerializer(address_data, many=True)
-#             return Response(addr_seril.data)
-#
-#         return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
-
-
+# renter list for add lease
 @method_decorator(csrf_exempt, name='dispatch')
 class renterforleaseview(APIView):
     authentication_classes = [JWTAuthentication]
@@ -76,7 +61,11 @@ class renterforleaseview(APIView):
         return Response({'detail': 'You Need Add Renter First'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# To Get Renter For Lease Form
+
+
+
+
+# To Get Renter on Lease
 @method_decorator(csrf_exempt, name='dispatch')
 class Getrenterifonlease(APIView):
     authentication_classes = [JWTAuthentication]
@@ -87,14 +76,13 @@ class Getrenterifonlease(APIView):
         renter_id=lease.objects.filter(address_id=address_id).values_list('renter_id', flat=True).first()
 
         if renter_id:
+            # get address on lease
             address1 = address.objects.filter(id=address_id,is_on_rent=0)
             start_date = lease.objects.filter(address_id=address_id).values("start_date")
-            print(address1)
             if address1:
-                return Response({'detail': 'Address Is Not On Lease'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'detail': 'Renter Dont Have Lease'}, status=status.HTTP_400_BAD_REQUEST)
 
             else:
-                print("work")
                 extra_data = {
                     'start_date': start_date[0]['start_date'],
                 }

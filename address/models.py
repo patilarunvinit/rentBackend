@@ -1,7 +1,7 @@
 from django.db import models
 
 
-# Create your models here.
+# model for address
 class address(models.Model):
     owner_id=models.IntegerField(null=True)
     Area = models.CharField(max_length=500)

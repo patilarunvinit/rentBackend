@@ -3,11 +3,10 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from datetime import timedelta
 
-# Create your models here.
+# Create for user(owner)
 class User(AbstractUser):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=255)
     mobile_no = models.CharField(max_length=20)
     b_date = models.DateField(null = True)
     owner_photo = models.ImageField(upload_to='images/', null=True, verbose_name="")
@@ -22,6 +21,7 @@ class User(AbstractUser):
 
 
 
+# Create for OTP
 class OTP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     otp_code = models.CharField(max_length=6)
