@@ -91,3 +91,6 @@ class Getrenterifonlease(APIView):
                 return Response([addr_seril.data, extra_data])
 
         return Response({'detail': 'Address Is Not On Lease'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+#test
