@@ -82,7 +82,7 @@ class fullRemainPayView(APIView):
             serializer.save()
             return Response(serializer.data)
         else:
-            print("Errors:", serializer.errors)
+            pass
         return Response({'detail': 'Some Think Went Wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -163,7 +163,7 @@ class getleaseforrent(APIView):
         # convert address id's into list
         address_ids_list = list(address_id)
         # get a list of lease info from address id's
-        lease_data = lease.objects.filter(address_id__in=address_ids_list)
+        lease_data = lease.objects.filter(address_id__in=address_ids_list,end_date__isnull=True)
         # get today's date
         today = date.today()
         # mark end date to get last lease (last month lease)
@@ -210,7 +210,7 @@ class getleaseforrent(APIView):
                 addressdata=address.objects.filter(id=leasedata.address_id).values('Area','Building_name','Floor','Flat_no')
                 paid=Payment.objects.filter(lease_id=lease_id,for_month=dateformonth,is_remain_pay=0).values('paid')
                 date_of_pay=Payment.objects.filter(lease_id=lease_id,for_month=dateformonth).values('date_of_pay')
-                # compare seleted date and loop months
+                # compare selected date and loop months
                 if reqdate == dateformonth:
                     lease_list.append({"lease_id": lease_id})
                     lease_list.append({"dateformonth": dateformonth})
@@ -229,6 +229,8 @@ class getleaseforrent(APIView):
         # if there is any lease for selected date send a lease
         if main_list:
             return Response(main_list)
+        if lease_data:
+            return Response({'detail': 'No leases available this month'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'detail': 'No Address Is On Lease'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -252,13 +254,14 @@ class getmonths(APIView):
             address_id = address.objects.filter(owner_id=owner_id, is_on_rent=1).values_list('id', flat=True)
             address_ids_list = list(address_id)
             # get lease from user(owner) address id's list
-            lease_data = lease.objects.filter(address_id__in=address_ids_list)
+            lease_data = lease.objects.filter(address_id__in=address_ids_list,end_date__isnull=True)
             # today dates
             today = date.today()
             main_list = []
             for leasedata in lease_data:
                 # make last date by subtracting 1 month
                 end_date = today - relativedelta(months=1)
+                to_last_date = {"dateformonth": end_date.strftime('%Y-%m')}
                 # loop from start date to last date
                 while leasedata.start_date <= end_date:
                     leasedata.start_date += relativedelta(months=1)
@@ -271,13 +274,17 @@ class getmonths(APIView):
                     else:
                         main_list.append(date_dict)
 
+
+            if to_last_date not in main_list:
+                main_list.append(to_last_date)
             # descending order a list of month
             main_list.sort(key=lambda x: parse_date(x["dateformonth"] + '-01'), reverse=True)
+
 
             if main_list:
                 return Response(main_list)
 
-            return Response({'detail': 'You Need Add Adrress First'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'No Address Is On Lease'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -299,7 +306,7 @@ class getremiain(APIView):
         owner_id = data[0]["id"]
         address_id = address.objects.filter(owner_id=owner_id, is_on_rent=1).values_list('id', flat=True)
         address_ids_list = list(address_id)
-        lease_ids = lease.objects.filter(address_id__in=address_ids_list).values_list('id', flat=True)
+        lease_ids = lease.objects.filter(address_id__in=address_ids_list,end_date__isnull=True).values_list('id', flat=True)
         # get list of lease id's for owner address
         lease_ids_list = list(lease_ids)
         # get lease sum of remain
